@@ -39,8 +39,14 @@ const COMMANDS = [
   },
   {
     name: "faq",
-    description: "FAQ management (coming soon)",
-    options: [],
+    description: "Post a frequently asked question",
+    options: [
+      { name: "release-date", description: "When is the game releasing?", type: 1, options: [] },
+      { name: "platforms", description: "What platforms are supported?", type: 1, options: [] },
+      { name: "updates", description: "How often are updates released?", type: 1, options: [] },
+      { name: "report-bug", description: "How do I report a bug?", type: 1, options: [] },
+      { name: "request-feature", description: "How do I request a feature?", type: 1, options: [] },
+    ],
   },
 ];
 
