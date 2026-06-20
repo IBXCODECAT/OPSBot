@@ -1,5 +1,4 @@
-// Run with: DISCORD_BOT_TOKEN=... DISCORD_APPLICATION_ID=... npm run register
-// Or define both in a .env file and source it first.
+// Run with: npm run register
 
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const APP_ID = process.env.DISCORD_APPLICATION_ID;
@@ -8,6 +7,14 @@ if (!TOKEN || !APP_ID) {
   console.error("Missing DISCORD_BOT_TOKEN or DISCORD_APPLICATION_ID environment variables.");
   process.exit(1);
 }
+
+const REASON_OPTION = {
+  name: "reason",
+  description: "Select a tag reason for closing",
+  type: 3,       // STRING
+  required: true,
+  autocomplete: true,
+};
 
 const COMMANDS = [
   {
@@ -18,27 +25,13 @@ const COMMANDS = [
         name: "close",
         description: "Close a bug report post",
         type: 1,
-        options: [
-          {
-            name: "reason",
-            description: "Reason for closing",
-            type: 3,
-            required: false,
-          },
-        ],
+        options: [REASON_OPTION],
       },
       {
         name: "open",
         description: "Re-open a bug report post",
         type: 1,
-        options: [
-          {
-            name: "reason",
-            description: "Reason for re-opening",
-            type: 3,
-            required: false,
-          },
-        ],
+        options: [],
       },
     ],
   },
@@ -50,27 +43,13 @@ const COMMANDS = [
         name: "close",
         description: "Close a feature request post",
         type: 1,
-        options: [
-          {
-            name: "reason",
-            description: "Reason for closing",
-            type: 3,
-            required: false,
-          },
-        ],
+        options: [REASON_OPTION],
       },
       {
         name: "open",
         description: "Re-open a feature request post",
         type: 1,
-        options: [
-          {
-            name: "reason",
-            description: "Reason for re-opening",
-            type: 3,
-            required: false,
-          },
-        ],
+        options: [],
       },
     ],
   },

@@ -50,35 +50,23 @@ export function handleFeatr(
     const reasonRaw =
       reasonOption && "value" in reasonOption ? String(reasonOption.value) : undefined;
 
-    let tagId: string | undefined;
-    let tagName: string | undefined;
-    if (reasonRaw) {
-      const colonIdx = reasonRaw.indexOf(":");
-      if (colonIdx > 0) {
-        tagId = reasonRaw.slice(0, colonIdx);
-        tagName = reasonRaw.slice(colonIdx + 1);
-      } else {
-        tagName = reasonRaw;
-      }
-    }
-
-    const reasonSuffix = tagName ? ` due to **${tagName}**` : "";
-    const publicContent = `Your feature request **${postTitle}** has been closed${reasonSuffix}.`;
+    const colonIdx = reasonRaw!.indexOf(":");
+    const tagId = reasonRaw!.slice(0, colonIdx);
+    const tagName = reasonRaw!.slice(colonIdx + 1);
+    const publicContent = `Your feature request **${postTitle}** has been closed due to **${tagName}**.`;
 
     ctx.waitUntil(
       (async () => {
         if (isThread) {
-          const thread = tagId ? await getChannelInfo(channelId, env.DISCORD_BOT_TOKEN) : null;
+          const thread = await getChannelInfo(channelId, env.DISCORD_BOT_TOKEN);
           const currentTags = thread?.applied_tags ?? [];
-          const appliedTags = tagId
-            ? currentTags.includes(tagId)
-              ? currentTags
-              : [...currentTags, tagId]
-            : currentTags;
+          const appliedTags = currentTags.includes(tagId)
+            ? currentTags
+            : [...currentTags, tagId];
 
           const ok = await patchThread(
             channelId,
-            { archived: true, ...(appliedTags.length ? { applied_tags: appliedTags } : {}) },
+            { archived: true, applied_tags: appliedTags },
             env.DISCORD_BOT_TOKEN
           );
 
@@ -93,18 +81,12 @@ export function handleFeatr(
         const sent = await sendChannelMessage(channelId, publicContent, env.DISCORD_BOT_TOKEN);
 
         if (sent) {
-          const ack = tagId
-            ? "Post closed and tagged."
-            : "Post closed. Remember to apply tags.";
-          await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN, ack);
+          await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN,
+            "Post closed and tagged."
+          );
         } else {
-          await sendFollowup(application_id, token, env.DISCORD_BOT_TOKEN, {
-            content: publicContent,
-          });
-          const ack = tagId
-            ? "Done."
-            : "Remember: tags still need to be applied to the post.";
-          await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN, ack);
+          await sendFollowup(application_id, token, env.DISCORD_BOT_TOKEN, { content: publicContent });
+          await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN, "Done.");
         }
       })()
     );

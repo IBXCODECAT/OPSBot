@@ -50,36 +50,23 @@ export function handleBugr(
     const reasonRaw =
       reasonOption && "value" in reasonOption ? String(reasonOption.value) : undefined;
 
-    let tagId: string | undefined;
-    let tagName: string | undefined;
-    if (reasonRaw) {
-      const colonIdx = reasonRaw.indexOf(":");
-      if (colonIdx > 0) {
-        tagId = reasonRaw.slice(0, colonIdx);
-        tagName = reasonRaw.slice(colonIdx + 1);
-      } else {
-        tagName = reasonRaw;
-      }
-    }
-
-    const reasonSuffix = tagName ? ` due to **${tagName}**` : "";
-    const publicContent = `Your bug report **${postTitle}** has been closed${reasonSuffix}.`;
+    const colonIdx = reasonRaw!.indexOf(":");
+    const tagId = reasonRaw!.slice(0, colonIdx);
+    const tagName = reasonRaw!.slice(colonIdx + 1);
+    const publicContent = `Your bug report **${postTitle}** has been closed due to **${tagName}**.`;
 
     ctx.waitUntil(
       (async () => {
-        // 1. Attempt thread operations if in a thread
         if (isThread) {
-          const thread = tagId ? await getChannelInfo(channelId, env.DISCORD_BOT_TOKEN) : null;
+          const thread = await getChannelInfo(channelId, env.DISCORD_BOT_TOKEN);
           const currentTags = thread?.applied_tags ?? [];
-          const appliedTags = tagId
-            ? currentTags.includes(tagId)
-              ? currentTags
-              : [...currentTags, tagId]
-            : currentTags;
+          const appliedTags = currentTags.includes(tagId)
+            ? currentTags
+            : [...currentTags, tagId];
 
           const ok = await patchThread(
             channelId,
-            { archived: true, ...(appliedTags.length ? { applied_tags: appliedTags } : {}) },
+            { archived: true, applied_tags: appliedTags },
             env.DISCORD_BOT_TOKEN
           );
 
@@ -91,28 +78,15 @@ export function handleBugr(
           }
         }
 
-        // 2. Try sending a direct channel message
         const sent = await sendChannelMessage(channelId, publicContent, env.DISCORD_BOT_TOKEN);
 
         if (sent) {
-          // Edit the deferred ack with a reminder (or silent confirmation if tag was applied)
-          const ack = tagId
-            ? "Post closed and tagged."
-            : "Post closed. Remember to apply tags.";
-          await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN, ack);
+          await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN,
+            "Post closed and tagged."
+          );
         } else {
-          // Fall back: send public content via interaction followup
-          await sendFollowup(application_id, token, env.DISCORD_BOT_TOKEN, {
-            content: publicContent,
-          });
-          // Edit deferred ack with reminder if no tag
-          if (!tagId) {
-            await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN,
-              "Remember: tags still need to be applied to the post."
-            );
-          } else {
-            await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN, "Done.");
-          }
+          await sendFollowup(application_id, token, env.DISCORD_BOT_TOKEN, { content: publicContent });
+          await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN, "Done.");
         }
       })()
     );
