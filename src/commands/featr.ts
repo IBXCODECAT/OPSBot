@@ -19,7 +19,7 @@ const THREAD_TYPES = [
   ChannelType.AnnouncementThread,
 ];
 
-const DEFERRED_EPHEMERAL = Response.json({ type: 5, data: { flags: EPHEMERAL_FLAG } });
+const deferredEphemeral = () => Response.json({ type: 5, data: { flags: EPHEMERAL_FLAG } });
 
 export function handleFeatr(
   interaction: APIChatInputApplicationCommandInteraction,
@@ -109,7 +109,7 @@ export function handleFeatr(
       })()
     );
 
-    return DEFERRED_EPHEMERAL;
+    return deferredEphemeral();
   }
 
   if (subName === "open") {
@@ -137,7 +137,7 @@ export function handleFeatr(
       })()
     );
 
-    return DEFERRED_EPHEMERAL;
+    return deferredEphemeral();
   }
 
   return Response.json({

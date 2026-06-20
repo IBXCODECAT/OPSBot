@@ -19,8 +19,7 @@ const THREAD_TYPES = [
   ChannelType.AnnouncementThread,
 ];
 
-// Deferred ephemeral — shows "Bot is thinking..." only to the invoker.
-const DEFERRED_EPHEMERAL = Response.json({ type: 5, data: { flags: EPHEMERAL_FLAG } });
+const deferredEphemeral = () => Response.json({ type: 5, data: { flags: EPHEMERAL_FLAG } });
 
 export function handleBugr(
   interaction: APIChatInputApplicationCommandInteraction,
@@ -118,7 +117,7 @@ export function handleBugr(
       })()
     );
 
-    return DEFERRED_EPHEMERAL;
+    return deferredEphemeral();
   }
 
   if (subName === "open") {
@@ -146,7 +145,7 @@ export function handleBugr(
       })()
     );
 
-    return DEFERRED_EPHEMERAL;
+    return deferredEphemeral();
   }
 
   return Response.json({
