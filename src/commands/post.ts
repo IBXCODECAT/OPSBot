@@ -53,7 +53,7 @@ export function handlePost(
     const colonIdx = reasonRaw!.indexOf(":");
     const tagId = reasonRaw!.slice(0, colonIdx);
     const tagName = reasonRaw!.slice(colonIdx + 1);
-    const publicContent = `Your post **${postTitle}** has been closed due to **${tagName}**.`;
+    const publicContent = `Your post **${postTitle}** has been closed and tagged as **${tagName}**.`;
 
     ctx.waitUntil(
       (async () => {
