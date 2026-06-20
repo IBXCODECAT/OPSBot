@@ -36,7 +36,7 @@ export default {
       const { name } = cmd.data;
 
       if (name === "post") return handlePost(cmd, env, ctx);
-      if (name === "faq") return handleFaq(cmd, env, ctx);
+      if (name === "faq") return await handleFaq(cmd, env, ctx);
     }
 
     return new Response("Unknown interaction", { status: 400 });

@@ -1,4 +1,4 @@
-import { sendChannelMessage, sendFollowup, editInteractionResponse } from "../discord/api.js";
+import { sendChannelMessage } from "../discord/api.js";
 import {
   MANAGE_MESSAGES_BIT,
   EPHEMERAL_FLAG,
@@ -28,11 +28,11 @@ const FAQ: Record<string, string> = {
     `**How do I request a feature?**\nHave an idea? Share it in <#${FEATURE_REQUEST_CHANNEL_ID}> by creating a new post. Describe your suggestion clearly and explain why it would improve the game.`,
 };
 
-export function handleFaq(
+export async function handleFaq(
   interaction: APIChatInputApplicationCommandInteraction,
   env: Env,
-  ctx: ExecutionContext
-): Response {
+  _ctx: ExecutionContext
+): Promise<Response> {
   const perms = interaction.member?.permissions ?? "0";
   const hasPermission = (BigInt(perms) & MANAGE_MESSAGES_BIT) !== 0n;
 
@@ -56,19 +56,19 @@ export function handleFaq(
   }
 
   const channelId = interaction.channel!.id;
-  const { application_id, token } = interaction;
+  const sent = await sendChannelMessage(channelId, content, env.DISCORD_BOT_TOKEN);
 
-  ctx.waitUntil(
-    (async () => {
-      const sent = await sendChannelMessage(channelId, content, env.DISCORD_BOT_TOKEN);
-      if (sent) {
-        await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN, "FAQ sent.");
-      } else {
-        await sendFollowup(application_id, token, env.DISCORD_BOT_TOKEN, { content });
-        await editInteractionResponse(application_id, token, env.DISCORD_BOT_TOKEN, "Done.");
-      }
-    })()
-  );
-
-  return Response.json({ type: 5, data: { flags: EPHEMERAL_FLAG } });
+  if (sent) {
+    // Channel message succeeded — acknowledge ephemerally
+    return Response.json({
+      type: 4,
+      data: { content: "Done.", flags: EPHEMERAL_FLAG },
+    });
+  } else {
+    // Channel message failed — respond publicly via interaction
+    return Response.json({
+      type: 4,
+      data: { content },
+    });
+  }
 }
