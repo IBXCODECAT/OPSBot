@@ -2,10 +2,12 @@ import { verifyDiscordRequest } from "./discord/verify.js";
 import { handleBugr } from "./commands/bugr.js";
 import { handleFeatr } from "./commands/featr.js";
 import { handleFaq } from "./commands/faq.js";
+import { handleAutocomplete } from "./commands/autocomplete.js";
 import type { Env } from "./discord/types.js";
 import type {
   APIInteraction,
   APIChatInputApplicationCommandInteraction,
+  APIApplicationCommandAutocompleteInteraction,
 } from "discord-api-types/v10";
 import { InteractionType } from "discord-api-types/v10";
 
@@ -24,6 +26,11 @@ export default {
 
     if (interaction.type === InteractionType.Ping) {
       return Response.json({ type: 1 });
+    }
+
+    if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
+      const ac = interaction as APIApplicationCommandAutocompleteInteraction;
+      return handleAutocomplete(ac, env);
     }
 
     if (interaction.type === InteractionType.ApplicationCommand && interaction.data) {
