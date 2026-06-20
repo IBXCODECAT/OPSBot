@@ -1,0 +1,22 @@
+{
+  "name": "ops-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "wrangler dev",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "register": "tsx --env-file=.env scripts/register.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "@types/node": "^26.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "discord-api-types": "^0.38.49"
+  }
+}

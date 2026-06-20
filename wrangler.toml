@@ -1,0 +1,13 @@
+name = "ops-bot"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+# Secrets are set via wrangler CLI (never put in this file):
+#   wrangler secret put DISCORD_PUBLIC_KEY
+#   wrangler secret put DISCORD_BOT_TOKEN
+#   wrangler secret put DISCORD_APPLICATION_ID
+#
+# For local dev, create a .dev.vars file (git-ignored):
+#   DISCORD_PUBLIC_KEY=<hex_public_key>
+#   DISCORD_BOT_TOKEN=<bot_token>
+#   DISCORD_APPLICATION_ID=<app_id>

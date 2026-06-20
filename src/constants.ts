@@ -1,0 +1,3 @@
+export const AUTHORIZED_ROLE_ID = "1498524511157620917";
+export const MANAGE_MESSAGES_BIT = 0x2000n;
+export const EPHEMERAL_FLAG = 64;
