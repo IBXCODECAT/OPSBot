@@ -1,3 +1,5 @@
+// Registers slash commands with Discord.
+// Uses PUT which atomically replaces ALL existing commands — old commands are automatically deleted.
 // Run with: npm run register
 
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
@@ -8,46 +10,28 @@ if (!TOKEN || !APP_ID) {
   process.exit(1);
 }
 
-const REASON_OPTION = {
-  name: "reason",
-  description: "Select a tag reason for closing",
-  type: 3,       // STRING
-  required: true,
-  autocomplete: true,
-};
-
 const COMMANDS = [
   {
-    name: "bugr",
-    description: "Manage bug report posts",
+    name: "post",
+    description: "Manage forum posts",
     options: [
       {
         name: "close",
-        description: "Close a bug report post",
+        description: "Close a post",
         type: 1,
-        options: [REASON_OPTION],
+        options: [
+          {
+            name: "reason",
+            description: "Select a tag reason for closing",
+            type: 3,
+            required: true,
+            autocomplete: true,
+          },
+        ],
       },
       {
         name: "open",
-        description: "Re-open a bug report post",
-        type: 1,
-        options: [],
-      },
-    ],
-  },
-  {
-    name: "featr",
-    description: "Manage feature request posts",
-    options: [
-      {
-        name: "close",
-        description: "Close a feature request post",
-        type: 1,
-        options: [REASON_OPTION],
-      },
-      {
-        name: "open",
-        description: "Re-open a feature request post",
+        description: "Re-open a post",
         type: 1,
         options: [],
       },
@@ -73,7 +57,7 @@ const res = await fetch(url, {
 
 if (res.ok) {
   const data = (await res.json()) as unknown[];
-  console.log(`Registered ${data.length} commands successfully.`);
+  console.log(`Registered ${data.length} commands successfully. All previous commands replaced.`);
 } else {
   const err = await res.json();
   console.error("Discord API error:", JSON.stringify(err, null, 2));

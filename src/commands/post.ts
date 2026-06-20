@@ -21,7 +21,7 @@ const THREAD_TYPES = [
 
 const deferredEphemeral = () => Response.json({ type: 5, data: { flags: EPHEMERAL_FLAG } });
 
-export function handleBugr(
+export function handlePost(
   interaction: APIChatInputApplicationCommandInteraction,
   env: Env,
   ctx: ExecutionContext
@@ -53,7 +53,7 @@ export function handleBugr(
     const colonIdx = reasonRaw!.indexOf(":");
     const tagId = reasonRaw!.slice(0, colonIdx);
     const tagName = reasonRaw!.slice(colonIdx + 1);
-    const publicContent = `Your bug report **${postTitle}** has been closed due to **${tagName}**.`;
+    const publicContent = `Your post **${postTitle}** has been closed due to **${tagName}**.`;
 
     ctx.waitUntil(
       (async () => {
@@ -107,7 +107,7 @@ export function handleBugr(
           }
         }
 
-        const publicContent = `Your bug report **${postTitle}** has been re-opened.`;
+        const publicContent = `Your post **${postTitle}** has been re-opened.`;
         const sent = await sendChannelMessage(channelId, publicContent, env.DISCORD_BOT_TOKEN);
 
         if (sent) {

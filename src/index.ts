@@ -1,6 +1,5 @@
 import { verifyDiscordRequest } from "./discord/verify.js";
-import { handleBugr } from "./commands/bugr.js";
-import { handleFeatr } from "./commands/featr.js";
+import { handlePost } from "./commands/post.js";
 import { handleFaq } from "./commands/faq.js";
 import { handleAutocomplete } from "./commands/autocomplete.js";
 import type { Env } from "./discord/types.js";
@@ -29,16 +28,14 @@ export default {
     }
 
     if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
-      const ac = interaction as APIApplicationCommandAutocompleteInteraction;
-      return handleAutocomplete(ac, env);
+      return handleAutocomplete(interaction as APIApplicationCommandAutocompleteInteraction, env);
     }
 
     if (interaction.type === InteractionType.ApplicationCommand && interaction.data) {
       const cmd = interaction as APIChatInputApplicationCommandInteraction;
       const { name } = cmd.data;
 
-      if (name === "bugr") return handleBugr(cmd, env, ctx);
-      if (name === "featr") return handleFeatr(cmd, env, ctx);
+      if (name === "post") return handlePost(cmd, env, ctx);
       if (name === "faq") return handleFaq(cmd, env, ctx);
     }
 
